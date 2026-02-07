@@ -131,8 +131,11 @@ def fetch_all_data():
             # Hybrid YF
             yf_hist = yf_rates_data.get('JPY/KRW')
             if yf_hist is not None and not yf_hist.empty:
-                history = yf_hist['Close'].tail(7).tolist()
-                prev_close = yf_hist['Close'].iloc[-2] if len(yf_hist) > 1 else price_jpykrw
+                # Yahoo Finance JPYKRW=X is per 1 JPY (~9.x), but we use per 100 JPY (~9xx).
+                # Scale YF history by 100
+                history_scaled = yf_hist['Close'] * 100
+                history = history_scaled.tail(7).tolist()
+                prev_close = history_scaled.iloc[-2] if len(history_scaled) > 1 else price_jpykrw
                 change = price_jpykrw - prev_close
                 change_pct = (change / prev_close) * 100
                 
