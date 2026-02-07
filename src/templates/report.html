@@ -90,7 +90,11 @@
                         <td>{{ item.name }}</td>
                         <td class="price">{{ item.price_str }}</td>
                         <td class="{{ item.color_class }}">{{ item.change_pct_str }}</td>
-                        <td class="sparkline"><img src="data:image/png;base64,{{ item.sparkline }}" /></td>
+                        <td class="sparkline">
+                            {% if item.sparkline %}
+                                <img src="data:image/png;base64,{{ item.sparkline }}" />
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
