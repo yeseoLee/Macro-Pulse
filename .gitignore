@@ -6,3 +6,5 @@ venv/
 .env
 .DS_Store
 macro_pulse_report.html
+.venv/
+.venv/
