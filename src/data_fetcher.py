@@ -56,12 +56,12 @@ CNBC_SYMBOLS = [
 
 def fetch_all_data():
     results = {
-        'exchange': [],
         'indices_domestic': [],
         'indices_overseas': [],
+        'volatility': [],
         'commodities_rates': [],
-        'crypto': [],
-        'volatility': []
+        'exchange': [],
+        'crypto': []
     }
 
     # 0. Fetch YF History for Rates (for Trend/Change)
