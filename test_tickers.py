@@ -1,20 +1,23 @@
 import yfinance as yf
-import pandas as pd
 
 tickers = {
     'USD/KRW': 'KRW=X',
     'JPY/KRW': 'JPYKRW=X',
     'S&P 500': '^GSPC',
+    'Nasdaq': '^IXIC',
     'Nikkei 225': '^N225',
+    'Euro Stoxx 50': '^STOXX50E', # Added
     'Shanghai Composite': '000001.SS',
     'KOSPI': '^KS11',
     'KOSDAQ': '^KQ11',
     'Gold': 'GC=F',
     'US 10Y': '^TNX',
-    'Japan 10Y': 'JP10Y', # Testing without ^
     'Bitcoin': 'BTC-USD',
     'VIX': '^VIX',
-    'VKOSPI': 'KSVKOSPI' # Testing this from search
+    # Problematic tickers (kept for reference)
+    # 'Japan 10Y': 'JP10YT=XX', 
+    # 'Korea 10Y': 'KR10YT=RR', 
+    # 'VKOSPI': '^VKOSPI' 
 }
 
 print("Testing tickers...")
