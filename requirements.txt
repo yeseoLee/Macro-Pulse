@@ -1,0 +1,6 @@
+yfinance
+matplotlib
+seaborn
+jinja2
+python-telegram-bot
+pandas

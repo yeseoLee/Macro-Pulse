@@ -1,0 +1,45 @@
+name: Daily Macro Pulse Report
+
+on:
+  schedule:
+    # 05:30 KST (20:30 UTC): Tue-Sun (Covers US Close + Weekend Crypto)
+    - cron: '30 20 * * 2-6,0'
+    # 16:30 KST (07:30 UTC): Mon-Fri (Covers KR Close)
+    - cron: '30 07 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Macro Pulse Bot
+      env:
+        SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+        SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: |
+        # Determine market context based on time? 
+        # For now, just run the default script which fetches everything.
+        python src/main.py
+      
+    - name: Upload Report Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: macro-pulse-report
+        path: macro_pulse_report.html
