@@ -42,6 +42,7 @@ To enable automatic daily reports, you must configure the following **Secrets** 
 | `SMTP_USERNAME` | (Optional) Your Gmail address (e.g., user@gmail.com) |
 | `SMTP_PASSWORD` | (Optional) Your Gmail App Password (not your login password) |
 | `RECIPIENT_EMAIL` | (Optional) Email address to receive the report |
+| `RAPIDAPI_CNBC_KEY` | (Required for complete data) RapidAPI Key for CNBC API |
 
 ## Schedule
 The bot runs automatically at:

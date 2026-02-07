@@ -33,6 +33,7 @@ jobs:
         RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        RAPIDAPI_CNBC_KEY: ${{ secrets.RAPIDAPI_CNBC_KEY }}
       run: |
         # Determine market context based on time? 
         # For now, just run the default script which fetches everything.

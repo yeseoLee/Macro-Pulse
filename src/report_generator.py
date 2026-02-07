@@ -31,8 +31,11 @@ def generate_html_report(data, template_dir='src/templates'):
     # Add sparklines to data
     for category, items in data.items():
         for item in items:
-            item['sparkline'] = generate_sparkline(item['history'])
-            
+            if len(item.get('history', [])) > 1:
+                item['sparkline'] = generate_sparkline(item['history'])
+            else:
+                 item['sparkline'] = "" # No sparkline
+                 
             # Format numbers
             if 'KRW' in item['name'] or 'Yen' in item['name']:
                 item['price_str'] = f"{item['price']:,.2f}"
