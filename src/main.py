@@ -5,6 +5,10 @@ from data_fetcher import fetch_all_data
 from report_generator import generate_html_report
 from notifier import send_telegram_report, send_email_report
 import warnings
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
 
 # Suppress warnings
 warnings.filterwarnings("ignore")

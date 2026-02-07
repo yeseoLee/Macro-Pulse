@@ -9,6 +9,7 @@ dependencies = [
     "jinja2>=3.1.6",
     "matplotlib>=3.10.8",
     "pandas>=3.0.0",
+    "python-dotenv>=1.2.1",
     "python-telegram-bot>=22.6",
     "seaborn>=0.13.2",
     "yfinance>=1.1.0",
