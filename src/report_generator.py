@@ -50,11 +50,11 @@ def generate_html_report(data, template_dir='src/templates'):
             if item.get('change') is not None:
                 item['change_str'] = f"{item['change']:+,.2f}"
                 item['change_pct_str'] = f"{item['change_pct']:+,.2f}%"
-                item['change_class'] = 'positive' if item['change'] > 0 else 'negative' if item['change'] < 0 else 'neutral'
+                item['color_class'] = 'positive' if item['change'] > 0 else 'negative' if item['change'] < 0 else 'neutral'
             else:
                 item['change_str'] = ""
                 item['change_pct_str'] = ""
-                item['change_class'] = 'neutral'
+                item['color_class'] = 'neutral'
 
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template('report.html')
