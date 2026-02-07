@@ -12,21 +12,25 @@ TICKERS = {
         'EUR/KRW': 'EURKRW=X',
         'CNY/KRW': 'CNYKRW=X',
     },
-    'indices': {
-        'S&P 500': '^GSPC',
-        'Dow Jones': '^DJI',
-        'Nasdaq': '^IXIC',
-        'Nikkei 225': '^N225',
-        'Shanghai Composite': '000001.SS',
+    'indices_domestic': {
         'KOSPI': '^KS11',
         'KOSDAQ': '^KQ11',
+    },
+    'indices_overseas': {
+        'S&P 500': '^GSPC',
+        'Nasdaq': '^IXIC',
+        'Euro Stoxx 50': '^STOXX50E', # Added
+        'Nikkei 225': '^N225',
+        'Shanghai Composite': '000001.SS',
+        # 'Dow Jones': '^DJI', # Removed as requested
     },
     'commodities_rates': {
         'Gold': 'GC=F',
         'Silver': 'SI=F',
         'Copper': 'HG=F',
         'US 10Y Treasury': '^TNX',
-        # 'Japan 10Y Treasury': '^JP10Y', # Data not reliably available on Yahoo
+        # 'Japan 10Y Treasury': 'JP10YT=XX', # Not available on Yahoo Finance API
+        # 'Korea 10Y Treasury': 'KR10YT=RR', # Not available on Yahoo Finance API
     },
     'crypto': {
         'Bitcoin': 'BTC-USD',
@@ -34,7 +38,7 @@ TICKERS = {
     },
     'volatility': {
         'VIX': '^VIX',
-        # 'VKOSPI': '^VKOSPI', # Data not reliably available on Yahoo
+        # 'VKOSPI': '^VKOSPI', # Not available on Yahoo Finance API
     }
 }
 
