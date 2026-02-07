@@ -18,6 +18,7 @@ YF_TICKERS = {
         'Nasdaq': '^IXIC',
         'Euro Stoxx 50': '^STOXX50E',
         'Nikkei 225': '^N225',
+        'Hang Seng': '^HSI',      # Added
         'Shanghai Composite': '000001.SS',
     },
     'commodities_rates': {
@@ -33,6 +34,13 @@ YF_TICKERS = {
     'volatility': {
         'VIX': '^VIX',
     }
+}
+
+# YF Tickers for Exchange Rates History (Hybrid Approach)
+YF_RATES_HISTORY = {
+    'USD/KRW': 'KRW=X',
+    'JPY/KRW': 'JPYKRW=X',
+    'EUR/KRW': 'EURKRW=X',
 }
 
 # CNBC Symbols to fetch
@@ -56,83 +64,120 @@ def fetch_all_data():
         'volatility': []
     }
 
+    # 0. Fetch YF History for Rates (for Trend/Change)
+    yf_rates_data = {}
+    logging.info("Fetching YF Rates History...")
+    for name, ticker in YF_RATES_HISTORY.items():
+        try:
+            hist = yf.Ticker(ticker).history(period="1mo")
+            if not hist.empty:
+                yf_rates_data[name] = hist
+        except Exception as e:
+            logging.error(f"Error fetching YF history for {name}: {e}")
+
     # 1. Fetch CNBC Data
     logging.info("Fetching CNBC data...")
     cnbc_data = fetch_cnbc_data(CNBC_SYMBOLS)
     
     # Process Rates from CNBC
-    # Defaults (if CNBC fails, we might want YF fallback, but user requested replacement. 
-    # For now, if CNBC fails, these will be missing or we can fallback if critical.)
-    
     usd_krw = cnbc_data.get('KRW=', {}).get('price')
     usd_jpy = cnbc_data.get('JPY=', {}).get('price')
-    eur_usd = cnbc_data.get('EUR=', {}).get('price') # Assuming EUR/USD
-    usd_cny = cnbc_data.get('CNY=', {}).get('price') # Assuming USD/CNY
+    eur_usd = cnbc_data.get('EUR=', {}).get('price') 
+    usd_cny = cnbc_data.get('CNY=', {}).get('price')
 
     # Helper to create result item
-    def create_item(name, price, change, change_pct):
+    def create_item(name, price, change, change_pct, history=None, use_blank=False):
+        if use_blank:
+            change = None
+            change_pct = None
+            history = []
+            
+        sparkline = None # Handled in report generator
         return {
             'name': name,
             'price': price,
             'change': change,
             'change_pct': change_pct,
-            'history': [price], # No history from CNBC for now
-            'sparkline': None # Will handle None in report generator
+            'history': history if history is not None else [price] if price else [],
+            'sparkline': sparkline
         }
 
     # Exchange Rates Calculation
     if usd_krw:
         # USD/KRW
-        item = cnbc_data['KRW=']
-        results['exchange'].append(create_item('USD/KRW', item['price'], item['change'], item['change_pct']))
+        # Hybrid: Use CNBC Price, but YF History/Change if available
+        yf_hist = yf_rates_data.get('USD/KRW')
+        price = usd_krw
+        change = cnbc_data['KRW=']['change']
+        change_pct = cnbc_data['KRW=']['change_pct']
+        history = [price]
         
-        # JPY/KRW = (USD/KRW) / (USD/JPY)
+        if yf_hist is not None and not yf_hist.empty:
+            history = yf_hist['Close'].tail(7).tolist()
+            prev_close = yf_hist['Close'].iloc[-2] if len(yf_hist) > 1 else price
+            change = price - prev_close
+            change_pct = (change / prev_close) * 100
+            
+        results['exchange'].append(create_item('USD/KRW', price, change, change_pct, history))
+        
+        # JPY/KRW
         if usd_jpy:
-            price = (usd_krw / usd_jpy) * 100 # JPY is usually quoted per 100 Yen in Korea? Or 1 Yen?
-            # Standard convention: JPY/KRW is usually quoted as "per 100 Yen" -> ~900 KRW.
-            # But mathematically standard: 1 JPY = X KRW -> ~9 KRW.
-            # Yahoo JPYKRW=X is ~9.
-            # User example: (JPY/KRW) via formula.
-            # Let's stick to 1 unit for consistency unless 100 is expected. 
-            # Yahoo returns ~9. I will stick to ~9.
-            price = usd_krw / usd_jpy
-            # Change calculation is complex for cross rates roughly. 
-            # change% ~= (KRW% - JPY%) roughly.
-            # Let's approximate or just show 0 change if we can't calculate history.
-            # Or use current prices. We need PREVIOUS prices to calculate Exact Change.
-            # Without history, we can't calculate exact change for cross rates accurately.
-            # I will set change to 0 for calculated rates for now, to be safe.
-            results['exchange'].append(create_item('JPY/KRW', price, 0, 0))
+            price_jpykrw = (usd_krw / usd_jpy) * 100 # JPY/KRW (100 Yen)
+            # Default CNBC change logic roughly
+            change = 0 
+            change_pct = 0
+            history = [price_jpykrw]
 
-        # EUR/KRW = (USD/KRW) * (EUR/USD)
+            # Hybrid YF
+            yf_hist = yf_rates_data.get('JPY/KRW')
+            if yf_hist is not None and not yf_hist.empty:
+                history = yf_hist['Close'].tail(7).tolist()
+                prev_close = yf_hist['Close'].iloc[-2] if len(yf_hist) > 1 else price_jpykrw
+                change = price_jpykrw - prev_close
+                change_pct = (change / prev_close) * 100
+                
+            results['exchange'].append(create_item('JPY/KRW', price_jpykrw, change, change_pct, history))
+
+        # EUR/KRW
         if eur_usd:
-            price = usd_krw * eur_usd
-            results['exchange'].append(create_item('EUR/KRW', price, 0, 0))
+            price_eurkrw = usd_krw * eur_usd
+            change = 0
+            change_pct = 0
+            history = [price_eurkrw]
+            
+            # Hybrid YF
+            yf_hist = yf_rates_data.get('EUR/KRW')
+            if yf_hist is not None and not yf_hist.empty:
+                history = yf_hist['Close'].tail(7).tolist()
+                prev_close = yf_hist['Close'].iloc[-2] if len(yf_hist) > 1 else price_eurkrw
+                change = price_eurkrw - prev_close
+                change_pct = (change / prev_close) * 100
 
-        # CNY/KRW = (USD/KRW) / (USD/CNY)
+            results['exchange'].append(create_item('EUR/KRW', price_eurkrw, change, change_pct, history))
+
+        # CNY/KRW (Blank Change/Trend)
         if usd_cny:
             price = usd_krw / usd_cny
-            results['exchange'].append(create_item('CNY/KRW', price, 0, 0))
+            results['exchange'].append(create_item('CNY/KRW', price, 0, 0, use_blank=True))
 
     else:
-        # Fallback to Yahoo if CNBC failed (optional, but good for reliability)
-        logging.warning("CNBC Rates failed. Falling back to YF for core rates not implemented here (User requested replacement).")
+        logging.warning("CNBC Rates failed. Data might be incomplete.")
 
-    # Add other CNBC items
+    # Add other CNBC items (Blank Change/Trend)
     # VKOSPI
     if '.KSVKOSPI' in cnbc_data:
         item = cnbc_data['.KSVKOSPI']
-        results['volatility'].append(create_item('VKOSPI', item['price'], item['change'], item['change_pct']))
+        results['volatility'].append(create_item('VKOSPI', item['price'], 0, 0, use_blank=True))
     
     # Japan 10Y
     if 'JP10Y' in cnbc_data:
         item = cnbc_data['JP10Y']
-        results['commodities_rates'].append(create_item('Japan 10Y Treasury', item['price'], item['change'], item['change_pct']))
+        results['commodities_rates'].append(create_item('Japan 10Y Treasury', item['price'], 0, 0, use_blank=True))
 
     # Korea 10Y
     if 'KR10Y' in cnbc_data:
         item = cnbc_data['KR10Y']
-        results['commodities_rates'].append(create_item('Korea 10Y Treasury', item['price'], item['change'], item['change_pct']))
+        results['commodities_rates'].append(create_item('Korea 10Y Treasury', item['price'], 0, 0, use_blank=True))
 
 
     # 2. Fetch Yahoo Finance Data

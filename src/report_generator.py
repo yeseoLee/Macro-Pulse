@@ -37,16 +37,24 @@ def generate_html_report(data, template_dir='src/templates'):
                  item['sparkline'] = "" # No sparkline
                  
             # Format numbers
-            if 'KRW' in item['name'] or 'Yen' in item['name']:
-                item['price_str'] = f"{item['price']:,.2f}"
-            elif 'Yield' in item['name'] or 'Rate' in item['name'] or 'Treasury' in item['name']:
-                 item['price_str'] = f"{item['price']:.3f}%"
+            if item.get('price') is not None:
+                if 'KRW' in item['name'] or 'Yen' in item['name']:
+                    item['price_str'] = f"{item['price']:,.2f}"
+                elif 'Bond' in item['name'] or 'Treasury' in item['name'] or 'Year' in item['name']:
+                     item['price_str'] = f"{item['price']:.3f}"
+                else:
+                    item['price_str'] = f"{item['price']:,.2f}"
             else:
-                 item['price_str'] = f"{item['price']:,.2f}"
-                 
-            item['change_str'] = f"{item['change']:+.2f}"
-            item['change_pct_str'] = f"{item['change_pct']:+.2f}%"
-            item['color_class'] = 'positive' if item['change'] >= 0 else 'negative'
+                item['price_str'] = ""
+
+            if item.get('change') is not None:
+                item['change_str'] = f"{item['change']:+,.2f}"
+                item['change_pct_str'] = f"{item['change_pct']:+,.2f}%"
+                item['change_class'] = 'positive' if item['change'] > 0 else 'negative' if item['change'] < 0 else 'neutral'
+            else:
+                item['change_str'] = ""
+                item['change_pct_str'] = ""
+                item['change_class'] = 'neutral'
 
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template('report.html')
