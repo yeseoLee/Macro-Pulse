@@ -38,7 +38,7 @@ YF_TICKERS = {
 # CNBC Symbols to fetch
 CNBC_SYMBOLS = [
     ".KSVKOSPI", # VKOSPI
-    "JP10Y-JP",  # Japan 10Y
+    "JP10Y",     # Japan 10Y
     "KR10Y",     # Korea 10Y
     "KRW=",      # USD/KRW
     "JPY=",      # USD/JPY
@@ -125,8 +125,8 @@ def fetch_all_data():
         results['volatility'].append(create_item('VKOSPI', item['price'], item['change'], item['change_pct']))
     
     # Japan 10Y
-    if 'JP10Y-JP' in cnbc_data:
-        item = cnbc_data['JP10Y-JP']
+    if 'JP10Y' in cnbc_data:
+        item = cnbc_data['JP10Y']
         results['commodities_rates'].append(create_item('Japan 10Y Treasury', item['price'], item['change'], item['change_pct']))
 
     # Korea 10Y
