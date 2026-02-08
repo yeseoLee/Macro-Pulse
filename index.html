@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Macro Pulse</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        h2 {
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+            color: #7f8c8d;
+            margin-top: 30px;
+            font-size: 1.2em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            color: #95a5a6;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.85em;
+        }
+        .price {
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .positive {
+            color: #2ecc71;
+        }
+        .negative {
+            color: #e74c3c;
+        }
+        .sparkline img {
+            height: 25px;
+            vertical-align: middle;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #bdc3c7;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Macro Pulse Daily Report</h1>
+        
+        
+            <h2>Indices Domestic</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>Trend (7d)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>KOSPI</td>
+                        <td class="price">5,089.14</td>
+                        <td class="negative">-1.44%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>KOSDAQ</td>
+                        <td class="price">1,080.77</td>
+                        <td class="negative">-2.49%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        
+            <h2>Indices Overseas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>Trend (7d)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>S&P 500</td>
+                        <td class="price">6,932.30</td>
+                        <td class="positive">+1.97%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Nasdaq</td>
+                        <td class="price">23,031.21</td>
+                        <td class="positive">+2.18%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Euro Stoxx 50</td>
+                        <td class="price">5,998.40</td>
+                        <td class="positive">+1.23%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Nikkei 225</td>
+                        <td class="price">54,253.68</td>
+                        <td class="positive">+0.81%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAAAyCAYAAAAZUZThAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjgsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvwVt1zgAAAAlwSFlzAAAPYQAAD2EBqD+naQAABlFJREFUeJztnV+IFVUcxz/rv/yDmEqpUCH9s0A6xqlcKg3R0BL/bFQa0kNB9RAUHIqK7KVUJGIQ6qGHHuolNav1v2XaX0tDBxlZhUgLJCtQLA3XTNft4TfD3b079+7O3jtz7975feCie+d35xx1P873nDlztqmzsxOlPjC+GwY0Bda7UOu+KEKTClIfGN9NBXYDY4EvgU3A5sB6J2rasZyjgtQBxndDgR+B22MO7wc2IsIcCayn/2AZooLUAcZ3rwGvh192AINLlB5FRNkI7A2s15F+7/KNClJjjO9uAw4AQxE5msNfFwOLAFPioyeBLYgwXwTWO596Z3OIClJDYqLVysB6y4tqJiOiLAJmEn91OQ98jsiyNbDeqbT6nDdUkBpSFK3agDvKzWAZ340D5iNXl7nAqJiyy8AewnFLYL1fqtjl3KGC1IiYaDU9sJ6f4PPDgdmILAuBq0uUtlEY5Ps6yE+GClID+hKtEp5vMDAdiWGLgZtLlP4GbEaE+Saw3n/9bTMvqCA1IGm06sf5b6EwyG8uUXYW2IZcWXYE1jtbrfYbCRUkYyqNVv1obxKwAJFlDjAspuwicnPyI6A1sN5fafWnnjC+G9vbn1UFyZBqR6t+tD8aGdwvRgb7V8aUXQR2AOuQO/nnsupfFhjfTQFawpcBJgTWO1OqXgXJkLSjVcK+DAVmUIhi18WUtSP3WtYhMWzArREzvmsCLAUpbi0qWRZY78NSn1dBMiLraJWE8JvoLmApsASYFFN2BmhFZNkdWO9Sdj1MhvHdEET+FuQ/gGtLlB4CVgTW21DqXCpIBtQ6WiUhnBG7F3gMeBgYH1N2CtiAyLInsN7l7HoYj/HdCOB+RIoFxPe7E/gBEX1jYL1jvZ1XBcmAeopWSQjFnoNcWVqA0TFlJ4D1wFoyvs9ifHclMpZqAeYRf+P0IrJKuhUZU/2ZpA0VJGXqOVolIbwx+SAiywJgeEzZMeSqsjaw3uGU+jEJGTO1ALOQv9dizgHbESm2lxuE94YKkiIDKVolIZwNW4jIMg8YElPWhsiyri9Rppf2bqQwyG4GmmLKTiE3QVuBXYH1/q2kzQgVJEUGarRKQrg+7CFEllnAoJiy/Ygs6/vyAFg4aTCNghRTS5QeR4RoBb5PY+JABUmJRolWSTC+mwg8gshyd0xJJ/AdIsvHgfVOdvnsYOAeCjNPk0s0c5iCFAfTHvOoICnQqNEqCeEy/UeR2bBpMSUdwC5ga3h8IXBVidPtI5QisN7PVe5qWVSQFMhDtEpCuDZsCSLLlD585BLwFSLFpsB6v6fYvbKoIFUmj9Gqr4RjC4OIspTud+/bgc8QKbbVy3owFaSKaLTqO6EszchY5Sjy2HB7bXvVk7jpOaX/vExBjjbgjRr2pa4JB9d7w1fdoleQKqHRqjGJm7NWEhJGq/cp3NVdrXI0BipIddBo1aBoxKoQjVaNjV5BKkCjVeNTdhbL+O4m4ClkY7L2olfxez2+rofnBFJGo1WDUzZiGd89gCwb7i8XSC5W1/dOAzsD6/1TQR9SQaNVPujtPsjICs9/RfgaW8E5ThvfrQHeDqz3d4X9qQoarfJDb4J8jewHOzJ8jejy+6TvRe/HPWhTjnHIuqYXjO/eAdZ0XQVaIzRa5YTMZ7GM7wbRXaBygs0EltF9w+Z24F3grcB6f2TXc0GjVb6o+2le47vrgZeAJ+j+eOUF4D3gzcB6xzPqi661yhl1L0iE8d01wIvA03SPaZeAD5BxwNGU+6DL2HPGgBEkwvhuAuCAZ+m+i8VlZGeNVYH1jqTQrkarHDLgBIkwvhsPPA88B4zpcqgT+BSJPwer1JZGq5wyYAWJML4bg1xNHD03C9uKfDPvq7ANjVY5ZcALEmF8Nwp4BhmnTCw6vAtYAXyb9CF/jVb5pmEEiQi3oHwSmfkq3pN1DyLKzr6IotFKaThBIozvhgGPA68ANxQdPoCIsqXcejGNVkrDChIR7vS9BHiVnlvfHwJWAp8U/8xxjVYK5ECQiPAOfguwnJ77NP0ErEL2lL2o0UqJyI0gEeFuGvMRUaYXHf4VWI2MXSIhNFrlmNwJEhGKMhsR4b4SZRqtck5uBemK8d0MZIwyt+iQRquco4J0wfjuTkSURcgPXZmv0SrfqCAxhIP0jhw8Mqz0wv9JQfb84MdprQAAAABJRU5ErkJggg==" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Hang Seng</td>
+                        <td class="price">26,559.95</td>
+                        <td class="negative">-1.21%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAAAyCAYAAAAZUZThAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjgsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvwVt1zgAAAAlwSFlzAAAPYQAAD2EBqD+naQAABgJJREFUeJztnVuIVVUYx3/jbbxOWpI7LKWigsKCEKxoIZZJt1XZTQ16CMuMxEjRwsKUQDArscIyNYouY5gGrofwQQv2gwn10EQ+lGFMVEsrtYuajTPTw7f3zHI6c2bGOefsc/l+sNl7vrX3WR971v+s27fWqWtvbycf3pq7gabIxfvz3qgoVUhdPoF4ayYA+4BBwCpgdeTikyXyTVEyZ0AP6c8AI4B6YCXQ5K25oeheKUqZ0JNAFgNrgNbk70uBXd6ad7015xbVM0UpA/I2sVK8NVcCbwDXBuYjwFPA5sjFbcVxT1GypVcCAfDWDAAeBlYDo4OkPcCjkYu/Lrh3ipIxvRZIStK0ehF4MDC3Ai8DKyMXHyuce4qSLX0WSErSWX8d6ZekNAMLIhe7AvimKJlzxgIB8NbUI/2QZchIV8rHwBORi3/sn3uKki39EkiKt+YSYD0wPTAfA5YDr0QuPtXvTBQlAwoiEABvTR0wG1gLjAuSvkI68XsLkpGilJCCCSTFWzMamXWfD9Ql5nZkmHhZ5OKjBc1QUYpIwQWS4q2ZAmwArgrMB4EngS2Ri4uTsaIUkJ5m0s+YpEk1GViE9EdAml4fADuTfouilDVFq0FCvDUXAOuAmYH5JBoAqZQ5JRFIirfGAq8BEwLzt8BjkYt3l8wRReklJRUIgLdmBPAc0vQaGCS9ByyOXHyopA4pSh5KLpAUb80kZGTrusB8FJl43KQBkEo5kJlAoCMAci4SADkmSNoDzI9c3JSJY4qSkKlAUvIEQK4FVmgApJIVZSGQFG/NNKTZFQZAHgAeiVy8KxuvlFqmrAQCHQGQS5HlvmEA5CZgic7EK6Wk7ASSkkwkbgSmBuafkSHhHdl4pdQaZSsQ6OjEzwNeAEYFSVuAhZGLf83EMaVmKGuBpCQz8RuAWwLz78BCoFHjupRiUbRYrEKSLLy6DRnlOpyYzwHeB3Z4a87PyjeluqmIGiTEWzMOeBW4LzD/CSwBNmptohSSihNIirdmJrKKMQrMnyJDwt9n45VSbVSsQAC8NWOAl4CHAvMJ4FlgXeTi1pwPKkovqWiBpHhrZgBvAhMD815gbuTib7LxSqkGqkIgAN6akcj6kgV0LvVtAZ5H1pz8m5VvSuVSNQJJ8dZcj8y6XxaYm5Da5ItsvFIqlaoTCIC3Ziiy5mQJnWtO2pCAyBWRi09k5ZtSWVSlQFK8NVcDb3H6xhHfIbVJnI1XSiVR1QIB8NYMRoIflwNDgqT1wNORi//KxDGlIqh6gaR4ay4HNgPXBOZmYF7k4p3ZeFV7JPF1Q4HhyI8zDQF+iFzckqlj3VAzAgHw1gxERrlWIf+glHeARZGLD+d8sEZIdsesR95NWoALfR2+95TfgI+QINS4nJZb15RAUrw1FyHzJjcG5oPA45GLtxUx3wFAA7K8eHQ3x3BkYGFQcg6vu54LmTY4yTvr+LyfgA+BRuDLrEOHalIg0PFtOReZiW8IkrYhP+HgczwzABiJFOR8hby7tAY652hqgVZk08DjyZHreihwEzAsx/P7kVqlMXLxvlI43JWaFUiKt2Y80mG/IzAfAT7j/wX8LLL/hu0LrclxqptzeN1C94W4u+ue0lt6UwN4a0Yh7382cDNSq3WlCRHLlsjFB/r0FvpBzQsEOmqTWUiU8NgCf3wLIrijwTnfcRwptLkKcW8Kenpuy7p5ciZ4a84G7kHEMo3cNe7nSBNsa+TiX4rpjwokwFszFtki9YHAfIrOwttTAc+V/k8lFtRywFtzHnA/MAeYkuOWNqSmbwS2F2OQRQWSg0Qo9STf6FrAs8dbcyFSq8wBJuW4pQXYiYhlR+TivwuRrwpEqTi8NVfQKZaLc9xyAnCIWD7pz+boKhClYkn6jpMRscwCxue47Q9gO9LB393XnwNUgShVQTIEb5Ba5V5kz4KuHAK2IjXLnt5MSKpAlKojib+bjojlLk7fMiqlGZmQfDvfHIsKRKlqvDXDgFsRsdzO6bt1AiyNXLymu+dVIErN4K1pAO5ExDIDCbGZGLm4ubtnVCBKTZIM5U/tKfbuPzz/VNhiPfkOAAAAAElFTkSuQmCC" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Shanghai Composite</td>
+                        <td class="price">4,065.58</td>
+                        <td class="negative">-0.25%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        
+            <h2>Volatility</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>Trend (7d)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>VKOSPI</td>
+                        <td class="price">51.48</td>
+                        <td class="neutral"></td>
+                        <td class="sparkline">
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>VIX</td>
+                        <td class="price">20.37</td>
+                        <td class="negative">-6.43%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        
+            <h2>Commodities Rates</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>Trend (7d)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>Japan 10Y Treasury</td>
+                        <td class="price">2.229</td>
+                        <td class="neutral"></td>
+                        <td class="sparkline">
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Korea 10Y Treasury</td>
+                        <td class="price">3.725</td>
+                        <td class="neutral"></td>
+                        <td class="sparkline">
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Gold</td>
+                        <td class="price">4,979.80</td>
+                        <td class="positive">+2.44%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Silver</td>
+                        <td class="price">76.89</td>
+                        <td class="positive">+0.48%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAAAyCAYAAAAZUZThAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjgsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvwVt1zgAAAAlwSFlzAAAPYQAAD2EBqD+naQAABc9JREFUeJztnUuMFEUYx38LC6isAsGYIsrDxIMmZiFA1ERKnhpCUnDzcdIj4oPzRr1oYkxUVKIRLwqKRMULlM+IYaFMiBISQODgGxUooyaibOS1rIeqzszizuzsTvdMzfD9kk5X1XR1fzOp/9TjP9PdMTAwQDW80QpYrqzbWPVAQWhDxlR70Ru9CjgEvO6NXtyYkAQhHaoKBLgBmAp0AJu80ZMLj0gQEmI4gbwA7Izp6cArxYYjCGnRUcMcZDrwNTApFt2nrHun6MAEIQWG60FQ1v0CrCkrejWKRhDanmEFAqCs2wJkvcZkYKM3uqa6gtDKjKSRrwF+jeklwNr8wxGEtBh2DlKON3opsCNmzwDzlXWHighMEFJgRMMkZd3nwLqYnQC87Y2ekHtUgpAIo5lHPEZY1QLoBp7KLxxBSIsRDbEyvNHdwF5gPDAALFHW9eYZmCCkwKhWopR1Bwk9CQSX/U1x2YV2pJ6l2nVAb0xPB16uOxpBSIxRDbEyvNEzgIOUXPZ7lXXv5hGYIKRAXWafsu5n4KGyog3e6OvqC0kQ0iEPN3wLkPUakxGXXWgj6m7IyroB4EHgWCxaCjxa73kFIQXqmoOUIy670I7kNhSKLvuLMTsB2Cwuu9Dq5D1X6AEOx/Rs4Mmczy8IDSW3IVaGN3o2wWUfR3DZFyvrduV6EUFoELmvNinrDgCPx2zmsk+qUkUQkqWo5djngd0xPQNx2YUWJfchVoY3eibBZb8qFt2jrHuvkIsJQkEUZugp644CD5cVbfBGX1vU9QShCIp2vDcDW2N6CuKyCy1GoY01uuyrgeOxaBnwSJHXFIQ8KWwOUo43ehnwWcyeAeYp6w5XqSIISdCQ4Y6ybgfwUsxmLvv4RlxbEOqhkfOBHuBITM9BXHahBWjIECvDGz0H+IqSy75IWbe7aiVBaCINXVFS1u0HnohZcdmF5GnGkutzgIvpmcD6JsQgCDXR0CFWhjd6FsFlvzIW3a2s21q5hiA0h6aYdsq6nxjssr8mLruQIs10td8C3o/pKcAb4rILqdGUIVaGN3oq4Tam02LRWmWdzEmGwRvdQfCTuoCJZfuJQ5TVuu8nPE1sG7BDWdfXuHeULk0VCIA3+i7g05g9TXDZj1Sp0nZ4o8cB84GFhJvw1dKoi+xtTxPuL7Ad+EBZd6LAayVN0wUC4I1eT+k3WvuBW5V1Z5sXUbFEQcwDFgOLgNsJDb/RXABOAX2Em/9dUeG4Lwli2Q4cjr+xuyRIRSCXA/uAm2LRM8q6niaGlCtlglgUtwWMTBDnKDXkPPdnssbujb6M8GCklXHLhr0X8yNBKNuAL5R150bwPlqOJAQC4I2eS/im6iS47AuVda56rTQZhSCOEe5z3AscAP6h1JD7Gt2bxsWSeZTE0l3h0L+AjwiC+URZd7IhATaQZAQC4I3uAZ6O2aNAt7Lu7yaGVBNREHMZLIiuKlWOEybEvXH7PuVhS/StDLCKME/qHOKw84T3sg2w8Q9zLU9qAhlL+JAXxKJNyroHmhZQBbzRnfy/h6gmiBMMFsR3KQuiGvExF8sJPcsKSjcuv5gDlOYt+1r1/SYlEABv9PWEDzdz2XcBfxK685M17E8q6/pzjqmTwT2E5hIRRDViz3kHpaHYrAqHHqcklp3KutMNCTAHkhMIgDf6fmBjHac4Re2CGmp/lpELords+7YdBVGN6M3cTEkst1Q4tI+wrL8d+FBZ90fBMY0hDAmzbexF+d+Vdf9WOkeqAukg/MFqNeGn8anhCULIeolLThDD4Y2eRpi3rCT81Xqo29BeAPYAv1G5AdeTH1tDqCuUdR9XejFJgWREoXQRHqswqYb9UGWV1vZHFAqDe4hvRBC1442eCNxJEIsBrm5uRINYqayzlV5MWiB5EMfJtYirfN8F/EDoIXYigsiNuBBzG6Wh2I01VOuP2/mybbh8Lcf0A88q6/ZWunDbC0RIG2/0NYThUKXG3N/ML6f/AJIvF88Q9g/QAAAAAElFTkSuQmCC" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Copper</td>
+                        <td class="price">5.88</td>
+                        <td class="positive">+1.43%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>US 10Y Treasury</td>
+                        <td class="price">4.206</td>
+                        <td class="negative">-0.10%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        
+            <h2>Exchange</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>Trend (7d)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>USD/KRW</td>
+                        <td class="price">1,463.35</td>
+                        <td class="positive">+0.22%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>JPY/KRW</td>
+                        <td class="price">930.88</td>
+                        <td class="positive">+0.04%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>EUR/KRW</td>
+                        <td class="price">1,729.09</td>
+                        <td class="positive">+0.36%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>CNY/KRW</td>
+                        <td class="price">210.89</td>
+                        <td class="neutral"></td>
+                        <td class="sparkline">
+                            
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        
+            <h2>Crypto</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>Trend (7d)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>Bitcoin</td>
+                        <td class="price">69,295.99</td>
+                        <td class="positive">+0.02%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAAAyCAYAAAAZUZThAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjgsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvwVt1zgAAAAlwSFlzAAAPYQAAD2EBqD+naQAABpVJREFUeJztnVuIVVUYgL8xu9jFUrCW3cxKs6Ar9pCxsqyMphZFPXSRbkRJVFQQJD2EWFBBYXeIblCQ3QtWNGWJjatMMsvCfAipTMslaZaVaM44Pax12Nszs8+cmXP22WfO/B8czpm11579j/jNvy7/3tPW09NDJbzRlwBOWfdHxY6C0IK0VRLEG30MsAbYBSwDOoAPgJXKul0NiVAQCqQ/QW4Dnuzj0EbgQ4IsHyvrtuQTniAUS3+CnArMAtqB4zO6dQNfELJLByG7VB63CcIQoaIgabzRRwEXxte5wL4ZXTcQsksHIbv8WXOUglAQVQuSxhu9N3AWiTBTMrp2A0sJQ7EO4DvJLsJQYlCClOONnkgQpR2YAYzK6PobyVDsE2XdXzVfXBBypC6CpPFG70PILu0EaSZndO0CPidZGVsl2UVoNuouSDlxqbg0FJsB7JPRdT1JdlmkrNuaa2CCUAW5C5LGGz0KmE4yHDs2o2sX4AiyLCasjHU1JEhBSNFQQcrxRk8iyS5nk51d/gY+AzqBJcBXyrqdjYhRGN4UKkgab/S+hOzSHl9HV+i+jbA61hlfXyrrduQepDDsaBpB0nij24BJwHkEaaYDh1Q4ZQehFKYkzDJl3ba84xRan6YUpJwozGTC6lhJmMMrnLITWE4izFJl3d95xym0HkNCkHKiMBMJopSkmVjhlG5gBWH+0gl8Jjv8QjUMSUH6wht9BEl2mU4YomXRA6wkEWaJsm5z3jEKQ4+WEaQcb/R4dh+SndDPKatIhOlU1m3MN0JhKNCygpTjjR4HaBJhTgLaKpzyDnCtsu7fBoQnNCnDRpByvNFjCMKUssxpwIiybg64SCb4w5dhK0g53ujRwJkEWW4BRsdDy4ALZVI/PBFB+sAbPRVYCIyJTV8DM2UiP/woH1IIgLLuK+Ac4PfYdBqw2Bt9cHFRCUUggmSgrPuWUB+2ITadCHR6ow8tLCih4YggFVDWrSbMSdbHpinAEm/0kcVFJTQSmYNUQbxjchHJbv1aYIay7sfioqoP3mgFPEWoe9sE/EL4+Urvpc/rlHXbi4qzKESQKok79YtIduh/JUjyQ3FR1YY3eibwClDt3Goju0tT/r6l1e4KFUEGQNyd/4RkV34jcK6y7vvioho43ug9gXnAnFRz6Q7O0b3PqJp/yJZnLfCbsq67hu/fcESQARJ35D8GTo5Nm4DzlXUrCwtqAHijJwALgDNSzR3Adcq6373RBwIT4uvIsvcJwPgaLt9NmM+lpVlHuF0Belc2tOXwufzrDmXdz1kBiyCDwBs9FvgImBqbtgAXKOuWFxdV/3ijLwNeAA6KTV2ELDK/2kfJxkc+HU5vedLve9c18Hwxyrr3sw6KIIMk/qbtIPlNvBVoV9Z9XlxUfROfNPMIcGuq+SfgSmXdl3W+1ghgHL0zT1qgsfW8Zo2IIHnhjT4AsISlYIB/gYuVdZ8WFFIvvNHHAa+TDAkB3gRuKuq5ZPHf7QiCMIcBe6QO92R8rnRsoJ/TXy9W1q3LilUEqZF4L/17wPmxaTtwibJuYWFBRbzR1wFPA/vFpu3AHcBzrbbalBciSB2IQ5i3gIti03/A5ZVSd87x7A88A1yTal4NXKGsW1VETEMV2UmvA3ED7TLCPSQAewHveqMvb3Qs3uhTCMWVaTleAE4XOQaOZJA64o0eCbwMXBWbugk3Xb3agGu3ESbhjxIEhfA8sdnKugV5X79VEUHqjDd6D+B54PrY1APcqKx7KcdrjiVkiUtTzSsIq1Rr8rrucECGWHUm7hTfCDwbm9qAF73Rs/O4njd6GvANu8sxH5gmctSOZJCciEOe+YRVoxJ3Kuser9P3HwHcA9xPsky6Gbi+qMWBVkQEyZEoyYOE/8gl5ijrHq7x+ypCkeF5qeYlwCxl3fq+zxIGgwiSM1GS+4C5qea5wLzB7EX0UYHbQyg8fECegF9/RJAG4Y2eQ8gmJR4C7q1WkowK3A3A1c20c99qiCANxBt9J2FeUuJx4K7+JOmvArfecQoJsorVQJR1jxEeKVTiDuCZOOHuk1iBu5JEji7gbkLNl8iRM5JBCsAbfQNh36J0X8JLhOLB7lSfhlXgCtmIIAXhjb6asOteWqJ9lTBk6sqowH0DuFn+MnBjEUEKJNZqvQaMjE1vE/7i7xNIBW5TIIIUjDfaECqB9+rjsFTgFoxM0gtGWWcBQ8gUaaQCtwmQDNIkeKPPJhlu3S4VuM2BCNJExAcidMuOePPwP1aBkJHd/dxjAAAAAElFTkSuQmCC" />
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Ethereum</td>
+                        <td class="price">2,077.60</td>
+                        <td class="negative">-0.62%</td>
+                        <td class="sparkline">
+                            
+                                <img src="data:image/png;base64,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" />
+                            
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        
+        
+        <div class="footer">
+            Generated by Macro-Pulse Bot
+        </div>
+    </div>
+</body>
+</html>
