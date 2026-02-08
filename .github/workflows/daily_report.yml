@@ -8,6 +8,9 @@ on:
     - cron: '30 07 * * 1-5'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,6 +42,21 @@ jobs:
         # For now, just run the default script which fetches everything.
         python src/main.py
       
+    - name: Prepare public directory
+      if: success()
+      run: |
+        mkdir -p public
+        mv macro_pulse_report.html public/index.html
+
+    - name: Deploy to GitHub Pages
+      if: success()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+
     - name: Upload Report Artifact
       uses: actions/upload-artifact@v4
       with:
