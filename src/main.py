@@ -2,7 +2,7 @@ import os
 import argparse
 import asyncio
 from data_fetcher import fetch_all_data
-from report_generator import generate_html_report
+from report_generator import generate_html_report, generate_telegram_summary
 from notifier import send_telegram_report, send_email_report
 import warnings
 from dotenv import load_dotenv
@@ -13,13 +13,26 @@ load_dotenv()
 # Suppress warnings
 warnings.filterwarnings("ignore")
 
+from datetime import datetime, timezone
+
 async def main():
     parser = argparse.ArgumentParser(description="Macro Pulse Bot")
     parser.add_argument('--dry-run', action='store_true', help="Generate report but do not send")
     parser.add_argument('--market', type=str, default='Global', help="Market context (US/KR)")
     args = parser.parse_args()
 
-    print(f"Starting Macro Pulse Bot ({args.market})...")
+    # Determine mode based on Time (if no explicit arg provided or just default)
+    # KR Close (17:00 KST) = 08:00 UTC
+    # US Close (06:00 KST) = 21:00 UTC
+    now_utc = datetime.now(timezone.utc)
+    hour = now_utc.hour
+    
+    if 7 <= hour < 20:
+        mode = 'KR'
+    else:
+        mode = 'US'
+
+    print(f"Starting Macro Pulse Bot (Mode: {mode})...")
 
     # 1. Fetch Data
     print("Fetching data...")
@@ -28,6 +41,10 @@ async def main():
     # 2. Generate Report
     print("Generating report...")
     html_report = generate_html_report(data)
+    
+    # Generate Telegram Summary text
+    telegram_summary = generate_telegram_summary(data, mode)
+    print(f"Telegram Summary ({mode}):\n{telegram_summary}\n")
     
     # Save locally
     output_path = "macro_pulse_report.html"
@@ -50,9 +67,7 @@ async def main():
 
     # Telegram
     if telegram_token and telegram_chat_id:
-        summary = f"Macro Pulse Report ({args.market})\n"
-        # Add quick summary metrics if needed
-        await send_telegram_report(telegram_token, telegram_chat_id, output_path, summary)
+        await send_telegram_report(telegram_token, telegram_chat_id, output_path, telegram_summary)
 
     # Email
     if smtp_user and smtp_password:
