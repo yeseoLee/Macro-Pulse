@@ -216,6 +216,26 @@ def fetch_all_data():
             except Exception as e:
                 logging.error(f"Error fetching YF {name}: {e}")
 
+
+
+    # Reorder commodities_rates to ensure US 10Y is after Korea 10Y (Group Bonds)
+    # Target Order: Japan 10Y, Korea 10Y, US 10Y, others...
+    # Actually, let's just find US 10Y and move it to after Korea 10Y if both exist.
+    
+    cr_list = results['commodities_rates']
+    us_10y_idx = next((i for i, x in enumerate(cr_list) if x['name'] == 'US 10Y Treasury'), None)
+    korea_10y_idx = next((i for i, x in enumerate(cr_list) if x['name'] == 'Korea 10Y Treasury'), None)
+    
+    if us_10y_idx is not None and korea_10y_idx is not None:
+        # Move US 10Y to korea_10y_idx + 1
+        item = cr_list.pop(us_10y_idx)
+        # Re-calculate index of Korea because pop might have shifted it if US was before (unlikely)
+        korea_10y_idx = next((i for i, x in enumerate(cr_list) if x['name'] == 'Korea 10Y Treasury'), None)
+        if korea_10y_idx is not None:
+             cr_list.insert(korea_10y_idx + 1, item)
+        else:
+             cr_list.append(item) # Fallback
+             
     return results
 
 if __name__ == "__main__":
