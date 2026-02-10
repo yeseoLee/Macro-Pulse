@@ -2,10 +2,10 @@ name: Daily Macro Pulse Report
 
 on:
   schedule:
-    # 05:30 KST (20:30 UTC): Tue-Sun (Covers US Close + Weekend Crypto)
-    - cron: '30 20 * * 2-6,0'
-    # 16:30 KST (07:30 UTC): Mon-Fri (Covers KR Close)
-    - cron: '30 07 * * 1-5'
+    # 05:30 KST (20:30 UTC): Tue-Sat (Covers US Close)
+    - cron: '30 20 * * 1-5'
+    # 17:00 KST (08:00 UTC): Mon-Fri (Covers KR Close)
+    - cron: '00 08 * * 1-5'
   workflow_dispatch:
 
 permissions:
