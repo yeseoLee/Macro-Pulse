@@ -6,7 +6,7 @@ Bot for daily financial macro data monitoring. It fetches Exchange Rates, Indice
 
 - **Multi-Source Data Fetching**:
   - **Yahoo Finance**: Indices, Crypto, Commodities, and FX History.
-  - **6:00 AM KST** (21:00 UTC): Covers US market close.s and Bond Yields (Japan 10Y, Korea 10Y, VKOSPI).
+  - **CNBC API**: Real-time Exchange Rates and Bond Yields (Japan 10Y, Korea 10Y, VKOSPI).
   - **Hybrid Logic**: Uses CNBC for real-time FX prices and Yahoo Finance for 7-day trend analysis.
 - **Reporting**:
   - Generates a responsive HTML report (`macro_pulse_report.html`).
@@ -16,7 +16,7 @@ Bot for daily financial macro data monitoring. It fetches Exchange Rates, Indice
   - **Telegram**: Sends the report file + summary message.
   - **Email**: Sends the report via SMTP (optional).
 - **Automation**:
-  - **GitHub Actions**: Runs automatically twice daily (Morning/Evening KST).
+  - **GitHub Actions**: Runs automatically twice daily (06:00 KST for US Close, 17:00 KST for KR Close).
   - **GitHub Pages**: Deploys the latest report to a web URL.
 
 ## Setup
