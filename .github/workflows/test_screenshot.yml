@@ -1,0 +1,35 @@
+name: Test Finviz Screenshot
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-screenshot:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Screenshot Test
+      env:
+        KEEP_TEST_ARTIFACTS: "true"
+      run: |
+        python tests/test_screenshot.py
+
+    - name: Upload Screenshot Artifact
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: finviz-screenshot
+        path: test_finviz.png
