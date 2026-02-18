@@ -6,3 +6,6 @@ python-telegram-bot
 pandas
 cnbc==1.0.0
 python-dotenv
+ruff
+selenium
+webdriver-manager

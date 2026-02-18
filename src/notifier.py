@@ -7,10 +7,17 @@ from email import encoders
 import asyncio
 from telegram import Bot
 
-async def send_telegram_report(token, chat_id, html_file_path=None, message_text="Daily Macro Pulse Report"):
+
+async def send_telegram_report(
+    token,
+    chat_id,
+    html_file_path=None,
+    message_text="Daily Macro Pulse Report",
+    image_path=None,
+):
     """
     Sends the report to Telegram.
-    Can send a message and/or a file (PDF/HTML).
+    Can send a message and/or a file (PDF/HTML) and/or an image.
     """
     if not token or not chat_id:
         print("Telegram token or chat_id missing. Skipping Telegram.")
@@ -19,14 +26,23 @@ async def send_telegram_report(token, chat_id, html_file_path=None, message_text
     try:
         bot = Bot(token=token)
         await bot.send_message(chat_id=chat_id, text=message_text)
-        
+
+        # Send image if available
+        if image_path and os.path.exists(image_path):
+            with open(image_path, "rb") as img:
+                await bot.send_photo(chat_id=chat_id, photo=img)
+                print(f"Telegram photo sent: {image_path}")
+
         if html_file_path and os.path.exists(html_file_path):
-            with open(html_file_path, 'rb') as f:
+            with open(html_file_path, "rb") as f:
                 # Send as document
-                await bot.send_document(chat_id=chat_id, document=f, filename="macro_pulse_report.html")
+                await bot.send_document(
+                    chat_id=chat_id, document=f, filename="macro_pulse_report.html"
+                )
                 print("Telegram report sent.")
     except Exception as e:
         print(f"Failed to send Telegram message: {e}")
+
 
 def send_email_report(smtp_user, smtp_password, recipient_email, html_content):
     """
@@ -37,16 +53,16 @@ def send_email_report(smtp_user, smtp_password, recipient_email, html_content):
         return
 
     try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = "Daily Macro Pulse Report"
-        msg['From'] = smtp_user
-        msg['To'] = recipient_email
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "Daily Macro Pulse Report"
+        msg["From"] = smtp_user
+        msg["To"] = recipient_email
 
-        part1 = MIMEText(html_content, 'html')
+        part1 = MIMEText(html_content, "html")
         msg.attach(part1)
 
         # Standard Gmail SMTP port 587
-        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
         server.login(smtp_user, smtp_password)
         server.sendmail(smtp_user, recipient_email, msg.as_string())

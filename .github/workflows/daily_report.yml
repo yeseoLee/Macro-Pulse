@@ -2,8 +2,8 @@ name: Daily Macro Pulse Report
 
 on:
   schedule:
-    # 06:00 KST (21:00 UTC): Tue-Sat (Covers US Close)
-    - cron: '00 21 * * 1-5'
+    # 06:30 KST (21:30 UTC): Tue-Sat (Covers US Close)
+    - cron: '30 21 * * 1-5'
     # 17:00 KST (08:00 UTC): Mon-Fri (Covers KR Close)
     - cron: '00 08 * * 1-5'
   workflow_dispatch:
@@ -31,6 +31,7 @@ jobs:
         pip install -r requirements.txt
         pip list
 
+
     - name: Run Macro Pulse Bot
       env:
         SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
@@ -43,6 +44,16 @@ jobs:
         # Determine market context based on time? 
         # For now, just run the default script which fetches everything.
         python src/main.py
+
+    - name: Commit and Push
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add .
+        if ! git diff-index --quiet HEAD; then
+          git commit -m "Update daily macro pulse report"
+          git push
+        fi
       
     - name: Prepare public directory
       if: success()
