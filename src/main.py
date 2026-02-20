@@ -4,7 +4,7 @@ import asyncio
 from data_fetcher import fetch_all_data
 from report_generator import generate_html_report, generate_telegram_summary
 from notifier import send_telegram_report, send_email_report
-from screenshot_utils import take_finviz_screenshot
+from screenshot_utils import take_finviz_screenshot, take_kospi_screenshot
 import warnings
 from dotenv import load_dotenv
 
@@ -67,6 +67,9 @@ async def main():
     if mode == "US":
         print("Taking Finviz screenshot...")
         screenshot_path = take_finviz_screenshot()
+    elif mode == "KR":
+        print("Taking KOSPI screenshot...")
+        screenshot_path = take_kospi_screenshot()
 
     # 4. Notify
     # Load secrets from env

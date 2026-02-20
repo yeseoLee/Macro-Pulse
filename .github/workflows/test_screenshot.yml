@@ -2,6 +2,15 @@ name: Test Finviz Screenshot
 
 on:
   workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target to screenshot (finviz/kospi)'
+        required: true
+        default: 'finviz'
+        type: choice
+        options:
+          - finviz
+          - kospi
 
 jobs:
   test-screenshot:
@@ -25,11 +34,11 @@ jobs:
       env:
         KEEP_TEST_ARTIFACTS: "true"
       run: |
-        python tests/test_screenshot.py
+        python tests/test_screenshot.py --target ${{ inputs.target }}
 
     - name: Upload Screenshot Artifact
       if: success()
       uses: actions/upload-artifact@v4
       with:
-        name: finviz-screenshot
-        path: test_finviz.png
+        name: ${{ inputs.target }}-screenshot
+        path: test_${{ inputs.target }}.png
