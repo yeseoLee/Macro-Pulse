@@ -3,10 +3,10 @@ name: Daily Macro Pulse Report
 on:
   schedule:
     # BEGIN GENERATED SCHEDULES
-    # KR | 16:58 KST | 07:58 UTC | Mon-Fri
-    - cron: '58 07 * * 1-5'
-    # US | 06:28 KST | 21:28 UTC | Tue-Sat KST
-    - cron: '28 21 * * 1-5'
+    # KR | 17:00 KST | 08:00 UTC | Mon-Fri
+    - cron: '00 08 * * 1-5'
+    # US | 06:30 KST | 21:30 UTC | Tue-Sat KST
+    - cron: '30 21 * * 1-5'
     # END GENERATED SCHEDULES
   workflow_dispatch:
 
