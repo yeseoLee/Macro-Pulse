@@ -125,17 +125,18 @@ def _append_yahoo_snapshots(results: ReportDataset) -> None:
         for definition in definitions:
             try:
                 data = yf.Ticker(definition.symbol).history(period="1mo")
-                if data.empty:
+                closes = data["Close"].dropna()
+                if closes.empty:
                     logger.warning(
-                        "Yahoo Finance returned no history for %s (%s)",
+                        "Yahoo Finance returned no valid close prices for %s (%s)",
                         definition.name,
                         definition.symbol,
                     )
                     continue
 
-                last_price = float(data["Close"].iloc[-1])
-                if len(data) > 1:
-                    previous_price = float(data["Close"].iloc[-2])
+                last_price = float(closes.iloc[-1])
+                if len(closes) > 1:
+                    previous_price = float(closes.iloc[-2])
                     change = last_price - previous_price
                     change_pct = (change / previous_price) * 100
                 else:
@@ -148,9 +149,9 @@ def _append_yahoo_snapshots(results: ReportDataset) -> None:
                         last_price,
                         change,
                         change_pct,
-                        history=data["Close"].tail(7).tolist(),
+                        history=closes.tail(7).tolist(),
                         ticker=definition.symbol,
-                        dates=[date.strftime("%m-%d") for date in data.tail(7).index],
+                        dates=[date.strftime("%m-%d") for date in closes.tail(7).index],
                         value_format=definition.value_format,
                     )
                 )
